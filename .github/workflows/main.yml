@@ -83,15 +83,6 @@ jobs:
           echo "${{ steps.config.outputs.GIT_RELEASE_NOTES }}"
           echo CURRENT_VERSION="${{ steps.config.outputs.CURRENT_VERSION }}"
 
-      - name: checkout {{ env.GIT_AEM_CORE }}
-        uses: actions/checkout@v2
-        with:
-          repository: "${{ env.GIT_AEM_CORE }}"
-          ref: "${{ env.GIT_AEM_CORE_BRANCH }}"
-          path: "${{ env.GIT_AEM_CORE_PATH }}"
-          lfs: true
-          token: "${{ env.GIT_PAT }}"
-
       - name: Start the stack
         run: docker-compose up -d
 
