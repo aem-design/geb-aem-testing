@@ -1,0 +1,142 @@
+name: ci
+
+on: push
+
+jobs:
+  build:
+    if: "!contains(github.event.head_commit.message, 'skip ci')"
+    runs-on: ubuntu-latest
+
+    strategy:
+      max-parallel: 4
+      matrix:
+        java-version: [ 8 ]
+        python-version: [ 3.6 ]
+
+    env:
+      DOCKER_IMAGE: "aemdesign/centos-java-buildpack"
+      PYTHON_VERSION: 3.6
+      PACKAGE_PATH: "./packages"
+      SELENIUMHUB_PORT: 32768
+      AEM_PORT: 4502
+      GIT_PAT: ""
+      GIT_PAT_USER: ""
+
+
+    steps:
+      - name: Experimental Status
+        run: |
+          docker version -f '{{.Server.Experimental}}'
+      - name: docker config
+        run: |
+          docker version -f '{{.Server.Experimental}}'
+          export DOCKER_CLI_EXPERIMENTAL=enabled
+          docker version -f '{{.Server.Experimental}}'
+          sudo service docker restart
+          docker version -f '{{.Server.Experimental}}'
+          sudo rm /etc/docker/daemon.json
+          echo $'{\n    "experimental": true\n}' | sudo tee /etc/docker/daemon.json
+          sudo service docker restart
+          docker version -f '{{.Server.Experimental}}'
+
+      - name: set eval variables
+        run: |
+          echo "DOCKER_COMMAND=docker run --user $(id -u):$(id -g) -v ${GITHUB_WORKSPACE}:/build ${DOCKER_IMAGE}" >> $GITHUB_ENV
+          $DOCKER_COMMAND java -version
+          $DOCKER_COMMAND node -v
+          export DEPLOY_PACKAGE_URL=$(curl -s https://api.github.com/repos/aem-design/geb-aem-testing/releases/latest | grep browser_download_url | sed -e 's/.*\: \"\(.*\)\"/\1/')
+          echo "DEPLOY_PACKAGE_URL=${DEPLOY_PACKAGE_URL}" >> $GITHUB_ENV
+
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+          lfs: true
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - name: set up python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: install dependencies
+        run: |
+          pip3 install --upgrade pip
+          pip3 install --ignore-installed PyYAML
+          pip3 install ansible docker docker-compose
+          ansible-galaxy install -r requirements.yml
+
+      - name: cache maven packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: get release notes
+        id: config
+        run: |
+          source <(curl -sL https://github.com/aem-design/aemdesign-docker/releases/latest/download/github_get_version.sh)
+
+      - name: release notes
+        run: |
+          echo "${{ steps.config.outputs.GIT_RELEASE_NOTES }}"
+          echo CURRENT_VERSION="${{ steps.config.outputs.CURRENT_VERSION }}"
+
+      - name: checkout {{ env.GIT_AEM_CORE }}
+        uses: actions/checkout@v2
+        with:
+          repository: "${{ env.GIT_AEM_CORE }}"
+          ref: "${{ env.GIT_AEM_CORE_BRANCH }}"
+          path: "${{ env.GIT_AEM_CORE_PATH }}"
+          lfs: true
+          token: "${{ env.GIT_PAT }}"
+
+      - name: Start the stack
+        run: docker-compose up -d
+
+      #- name: Run funcitonal tests
+      #  run: yarn ...
+
+
+      - name: start automation tests
+        run: |
+          cd aemdesign-testing
+          ./test-spec --login --host $LOCAL_IP --port ${AEM_PORT} --url http://$LOCAL_IP:${SELENIUMHUB_PORT}/wd/hub GenericDetailsA*
+
+
+      - name: Stop the stack
+        run: docker-compose down
+
+
+      - name: Config AEM using Ansible
+        run: |
+          ansible-playbook automation-test.yml --extra-vars "GIT_PACKAGE_USERNAME=${GIT_PAT_USER} GIT_PACKAGE_PASSWORD=${GIT_PAT} DEPLOY_PACKAGE_URL=${DEPLOY_PACKAGE_URL} "
+
+      - name: mvn deploy current project
+        run: |
+          $DOCKER_COMMAND mvn deploy -DskipTests -B -Dmaven.repo.local=./build/.m2/repository
+
+      - name: create release ${{ env.GITHUB_TAG }}
+        if: github.ref == 'refs/heads/main'
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.config.outputs.CURRENT_VERSION }}
+          release_name: ${{ steps.config.outputs.CURRENT_VERSION }}
+          body: ${{ steps.config.outputs.GIT_RELEASE_NOTES }}
+          draft: false
+          prerelease: false
+
+      - name: upload release asset - gebaemtesting-showcase-${{ env.GITHUB_TAG }}.zip
+        if: github.ref == 'refs/heads/main'
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ format('./gebaemtesting-{0}/target/gebaemtesting-{0}-{1}.zip', 'showcase', env.GITHUB_TAG) }}
+          asset_name: ${{ format('gebaemtesting-{0}-{1}.zip', 'showcase', env.GITHUB_TAG) }}
+          asset_content_type: application/zip
