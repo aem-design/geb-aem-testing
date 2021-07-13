@@ -99,23 +99,26 @@ jobs:
       #  run: yarn ...
 
 
-      - name: start automation tests
-        run: |
-          cd aemdesign-testing
-          ./test-spec --login --host $LOCAL_IP --port ${AEM_PORT} --url http://$LOCAL_IP:${SELENIUMHUB_PORT}/wd/hub GenericDetailsA*
+      # - name: start automation tests
+      #   run: |
+      #     cd aemdesign-testing
+      #     ./test-spec --login --host $LOCAL_IP --port ${AEM_PORT} --url http://$LOCAL_IP:${SELENIUMHUB_PORT}/wd/hub GenericDetailsA*
 
 
-      - name: Stop the stack
-        run: docker-compose down
+      # - name: Config AEM using Ansible
+      #   run: |
+      #     ansible-playbook automation-test.yml --extra-vars "GIT_PACKAGE_USERNAME=${GIT_PAT_USER} GIT_PACKAGE_PASSWORD=${GIT_PAT} DEPLOY_PACKAGE_URL=${DEPLOY_PACKAGE_URL} "
 
-
-      - name: Config AEM using Ansible
-        run: |
-          ansible-playbook automation-test.yml --extra-vars "GIT_PACKAGE_USERNAME=${GIT_PAT_USER} GIT_PACKAGE_PASSWORD=${GIT_PAT} DEPLOY_PACKAGE_URL=${DEPLOY_PACKAGE_URL} "
+      # - name: mvn deploy current project
+      #   run: |
+      #     $DOCKER_COMMAND mvn deploy -DskipTests -B -Dmaven.repo.local=./build/.m2/repository
 
       - name: mvn deploy current project
         run: |
-          $DOCKER_COMMAND mvn deploy -DskipTests -B -Dmaven.repo.local=./build/.m2/repository
+          $DOCKER_COMMAND mvn clean package -DskipTests -B -Dmaven.repo.local=./build/.m2/repository
+
+      - name: Stop the stack
+        run: docker-compose down
 
       - name: create release ${{ env.GITHUB_TAG }}
         if: github.ref == 'refs/heads/main'
