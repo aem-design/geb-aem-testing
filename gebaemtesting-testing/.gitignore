@@ -1,0 +1,24 @@
+### Node ###
+# Appium
+node-config/appium_node_config
+node-config/package-lock.json
+
+
+### Ruby ###
+.bundle/
+.env
+Gemfile.lock
+vendor/
+
+
+### Other ###
+build
+drivers
+
+# Ignore testing remote driver exec files and results
+/remote-*
+/local-*
+logs/*
+
+# Ignore selenium jars
+selenium-server-*
