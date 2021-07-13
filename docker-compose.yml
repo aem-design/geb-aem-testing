@@ -1,0 +1,32 @@
+version: "3.8"
+
+services:
+
+  seleniumhub:
+    extends:
+      file: ./docker/selenium/docker-compose.yml
+      service: seleniumhub
+
+  selenium-node-chrome:
+    extends:
+      file: ./docker/selenium/docker-compose.yml
+      service: selenium-node-chrome
+    depends_on:
+      - seleniumhub
+    links:
+      - seleniumhub
+
+  author:
+    extends:
+      file: ./docker/aem/docker-compose.yml
+      service: author
+
+  publish:
+    extends:
+      file: ./docker/aem/docker-compose.yml
+      service: publish
+    depends_on:
+      - author
+    links:
+      - author
+

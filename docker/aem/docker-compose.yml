@@ -1,0 +1,25 @@
+version: "3.8"
+
+services:
+
+  author:
+    image: aemdesign/aem:sdk-2021.3.5087
+    hostname: author
+    ports:
+      - 4502:8080
+      - 30303:58242
+    environment:
+      - "TZ=Australia/Sydney"
+      - "AEM_RUNMODE=-Dsling.run.modes=author,crx3,crx3tar,localdev"
+      - "AEM_JVM_OPTS=-server -Xms248m -Xmx1524m -XX:MaxDirectMemorySize=256M -XX:+CMSClassUnloadingEnabled -Djava.awt.headless=true -Dorg.apache.felix.http.host=0.0.0.0 -Xdebug -Xrunjdwp:transport=dt_socket,server=y,address=58242,suspend=n"
+
+  publish:
+    image: aemdesign/aem:sdk-2021.3.5087
+    hostname: publish
+    ports:
+      - 4503:8080
+      - 30304:58242
+    environment:
+      - "TZ=Australia/Sydney"
+      - "AEM_RUNMODE=-Dsling.run.modes=publish,crx3,crx3tar,localdev"
+      - "AEM_JVM_OPTS=-server -Xms248m -Xmx1524m -XX:MaxDirectMemorySize=256M -XX:+CMSClassUnloadingEnabled -Djava.awt.headless=true -Dorg.apache.felix.http.host=0.0.0.0 -Xdebug -Xrunjdwp:transport=dt_socket,server=y,address=58242,suspend=n"

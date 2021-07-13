@@ -1,0 +1,19 @@
+version: "3.8"
+
+services:
+
+  seleniumhub:
+    image: selenium/hub:3.141.59
+    hostname: seleniumhub
+    environment:
+      - "GRID_TIMEOUT=10"
+    ports:
+      - 32768:4444
+
+  selenium-node-chrome:
+    image: selenium/node-chrome:3.141.59
+    hostname: selenium-node-chrome
+    environment:
+      - "GRID_TIMEOUT=10"
+      - "HUB_HOST=seleniumhub"
+    shm_size: '1g'
