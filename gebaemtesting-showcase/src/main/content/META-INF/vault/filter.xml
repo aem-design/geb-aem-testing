@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workspaceFilter version="1.0">
+    <filter root="/content/gebaemtesting-showcase" mode="replace"/>
+    <filter root="/content/dam/gebaemtesting-showcase" mode="replace"/>
+    <filter root="/conf/gebaemtesting-showcase" mode="replace"/>
+</workspaceFilter>
