@@ -44,10 +44,9 @@ $PARENT_PROJECT_PATH = ".."
 
 . ([Scriptblock]::Create((([System.Text.Encoding]::ASCII).getString((Invoke-WebRequest -Uri "${FUNCTIONS_URI}").Content))))
 
-Function Get-MavenCommand
+Function CompileMavenCommand
 {
   [Cmdletbinding()]
-  [Alias("getMavenCommand")]
   param
   (
     [Parameter(ValueFromPipeline)]
@@ -76,10 +75,9 @@ Function Get-MavenCommand
 
 }
 
-Function Do-RunTests
+Function RunTests
 {
   [Cmdletbinding()]
-  [Alias("runTests")]
   param(
     [string[]]$TEST_DRIVER_NAME = $args[0]
   )
@@ -91,16 +89,15 @@ Function Do-RunTests
 
   Foreach ($DRIVER IN $TEST_DRIVER_NAME) {
     printSectionLine "Starting test: [$COUNT/$DRIVER_LENGTH] $DRIVER"
-    runTest "$DRIVER"
+    RunTest "$DRIVER"
     $COUNT = $COUNT + 1
   }
 }
 
 
-Function Do-RunTest
+Function RunTest
 {
   [Cmdletbinding()]
-  [Alias("runTest")]
   param(
     [string]$DRIVER = $args[0]
   )
@@ -158,7 +155,7 @@ Function Do-RunTest
       $TEST_SELENIUM_URL = "${TEST_SELENIUMHUB_SCHEME}://seleniumhub:4444${TEST_SELENIUMHUB_SERVICE}"
     }
 
-    $MAVEN_COMMAND=$(getMavenCommand "${TEST_DISPATCHER}" "${DRIVER}" "${AEM_HOST}" "${TEST_LOGIN}" "${TEST_MAVEN_CONFIG}" "${AEM_PASSWORD}" "${AEM_PORT}" "${AEM_SCHEME}" "${TEST_SPECS}" "${TEST_SELENIUM_URL}" "${AEM_USERNAME}" "$([system.String]::Join(" ", $TEST_VIEWPORTS))" "${PROJECT_ROOT_DIR}" "${PARENT_PROJECT_NAME}" "${CURRENT_PROJECT_LOCATION}")
+    $MAVEN_COMMAND=$(CompileMavenCommand "${TEST_DISPATCHER}" "${DRIVER}" "${AEM_HOST}" "${TEST_LOGIN}" "${TEST_MAVEN_CONFIG}" "${AEM_PASSWORD}" "${AEM_PORT}" "${AEM_SCHEME}" "${TEST_SPECS}" "${TEST_SELENIUM_URL}" "${AEM_USERNAME}" "$([system.String]::Join(" ", $TEST_VIEWPORTS))" "${PROJECT_ROOT_DIR}" "${PARENT_PROJECT_NAME}" "${CURRENT_PROJECT_LOCATION}")
 
     if ( -Not( ${TEST_USING_MAVEN} ) )
     {
@@ -205,75 +202,32 @@ Function Do-RunTest
 
 }
 
-
-Function Do-MonitorTests
+Function OpenReports
 {
   [Cmdletbinding()]
-  [Alias("monitorTests")]
   param(
-    [string]$TEST_DRIVER_NAME = $args[0]
+    [string]$DRIVER = $args[0]
   )
-
-  $script:OPEN_REPORTS = $TEST_DRIVER_NAME
-  $OPEN_REPORTS_LENGTH = $OPEN_REPORTS.Length
-
-  printSubSectionStart "Watch Logs and Save to Log file"
-
-  $LOGFILE="${DOCKER_LOGS_FOLDER}\docker-log-stdout-$(DateStamp).log"
-  printSectionLine "CONTAINERS: ${OPEN_REPORTS}"
-  printSectionLine "LOGFILE: ${LOGFILE}"
-
-  $DOCKER_COMMAND = "docker logs -f ${TEST_DRIVER_NAME}"
-
-  Invoke-Expression -Command "${DOCKER_COMMAND}" | Tee-Object -Append -FilePath "${LOGFILE}"
-
-  printSubSectionEnd "Watch Logs and Save to Log file"
-
-  if ( ${TEST_OPEN_REPORT} )
-  {
-    openReports "${OPEN_REPORTS}"
-  }
-
-
-}
-
-
-Function Do-OpenReports
-{
-  [Cmdletbinding()]
-  [Alias("openReports")]
-  param(
-    [string[]]$TEST_DRIVER_NAME = $args[0]
-  )
-
-  $script:OPEN_REPORTS = $TEST_DRIVER_NAME
-  $OPEN_REPORTS_LENGTH = $OPEN_REPORTS.Length
 
   printSubSectionStart "Open Reports"
 
-  printSectionLine "REPORTS: $@"
+  printSectionLine "REPORTS: $DRIVER"
 
-  $COUNT = 1
+  $REPORT_PATH = ".\${DRIVER}\generated-docs\html\summary.html"
+  printSectionLine "CHECK REPORT: ${REPORT_PATH}"
 
-  Foreach ($DRIVER IN $OPEN_REPORTS_LENGTH) {
-    printSectionLine "CHECKING REPORT: [${COUNT}/${OPEN_REPORTS_LENGTH}] ${DRIVER}"
-    printSectionLine "OPENING REPORT: ${DRIVER}/$TEST_REPORT_PATH"
-
-    $REPORT_PATH = ".\${DOCKER_LOGS_FOLDER}\generated-docs\html\summary.html"
-    if (Test-Path "${REPORT_PATH}" -PathType leaf)
-    {
-      Invoke-Item "${REPORT_PATH}"
-    }
-
-    $REPORT_PATH = ".\${DOCKER_LOGS_FOLDER}\generated-docs\pdf\summary.pdf"
-    if (Test-Path "${REPORT_PATH}" -PathType leaf)
-    {
-      Invoke-Item "${REPORT_PATH}"
-    }
-
-
-    $COUNT = $COUNT + 1
+  if (Test-Path "${REPORT_PATH}" -PathType leaf)
+  {
+    Invoke-Item "${REPORT_PATH}"
   }
+
+  $REPORT_PATH = ".\${DRIVER}\generated-docs\pdf\summary.pdf"
+  printSectionLine "CHECK REPORT: ${REPORT_PATH}"
+  if (Test-Path "${REPORT_PATH}" -PathType leaf)
+  {
+    Invoke-Item "${REPORT_PATH}"
+  }
+
 
   # Walk thought reports and see if the reports are ready to open
   printSubSectionEnd "Open Reports"
@@ -334,7 +288,12 @@ if ( $HUB_AVAILABLE -And $AEM_AVAILABLE )
 
   printSectionBanner "Starting Tests on $(LocalIP)" "info"
 
-  runTests ${TEST_DRIVER_NAME}
+  RunTests ${TEST_DRIVER_NAME}
+
+  if ( ${TEST_OPEN_REPORT} )
+  {
+    OpenReports "${TEST_DRIVER_NAME}"
+  }
 
 } else {
   debug "Either Selenium Hub or AEM is not currently available!" "error"
