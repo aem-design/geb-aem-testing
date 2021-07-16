@@ -4,8 +4,4 @@
     jcr:primaryType="cq:Page">
     <content/>
     <base/>
-    <articles/>
-    <contacts/>
-    <contact/>
-    <article/>
 </jcr:root>
