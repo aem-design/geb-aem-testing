@@ -186,7 +186,7 @@ Function Do-RunTest
 
       printSubSectionEnd "Docker Compose Execute"
     } else {
-      
+
       printSubSectionStart "Direct Maven Command Execute"
       debug "${MAVEN_COMMAND}" "warn"
       Invoke-Expression "${MAVEN_COMMAND}"
@@ -195,7 +195,7 @@ Function Do-RunTest
     }
 
     printSubSectionStart "Convert Reports"
-    Invoke-Expression ".\asciidoctor-convert-reports $(&{If($SILENT) {"-SILENT"}})"
+    Invoke-Expression ".\asciidoctor-convert-reports -SILENT"
     printSubSectionEnd "Convert Reports"
 
 
