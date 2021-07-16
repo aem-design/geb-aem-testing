@@ -18,7 +18,7 @@ services:
       - -l
       - -c
       - "${MAVEN_COMMAND} -Dmaven.repo.local=/build/.m2/repository"
-    working_dir: "/build/${CURRENT_PROJECT_LOCATION}"
+    working_dir: "/build/${CURRENT_PROJECT_LOCATION}/"
     volumes:
       - "${PARENT_PROJECT_WITH_GIT}:/build/${PARENT_PROJECT_WITH_GIT_NAME}"
       - "${MAVEN_DIR}:/build/.m2"

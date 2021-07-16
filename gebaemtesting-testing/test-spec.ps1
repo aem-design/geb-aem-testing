@@ -21,8 +21,8 @@ Param(
   [string]$TEST_REPORT_PATH = "generated-docs/summary.html",
   [string]$TEST_DRIVER_NAME = "remote-seleniumhub-chrome",
   [string]$AEM_SCHEME = "http",
-  [string]$AEM_HOST = "$( (Get-NetIPAddress | Where-Object {$_.AddressState -eq "Preferred" -and $_.ValidLifetime -lt "24:00:00"}).IPAddress)",
-  [string]$AEM_PORT = "4502",
+  [string]$AEM_HOST = "author",     # selenium node has direct access to author network
+  [string]$AEM_PORT = "8080",     # selenium node has direct access to author network
   [string]$AEM_USERNAME = "admin",
   [string]$AEM_PASSWORD = "admin",
   [string]$TEST_WORKSPACE = "",
@@ -33,7 +33,7 @@ Param(
   [switch]$TEST_USING_MAVEN = $false,
   [string]$FUNCTIONS_URI = "https://github.com/aem-design/aemdesign-docker/releases/latest/download/functions.ps1",
   [string]$TEST_VIEWPORTS = "$( (Get-Content ".\test-viewports") -join ",")",
-  [string]$DOCKER_COMPOSE_COMMAND = "docker-compose --profile=dotest up testing",
+  [string]$DOCKER_COMPOSE_COMMAND = "cd ..; docker-compose --profile=dotest up testing; cd -",
   [Parameter(Position=0)]
   [string]$TEST_SPECS = "$( (Get-Content ".\test-list") -join ",")"
 
@@ -147,12 +147,11 @@ Function RunTest
     printSectionLine "CURRENT_PROJECT_LOCATION: ${CURRENT_PROJECT_LOCATION}"
     printSectionLine "MAVEN_DIR: ${MAVEN_DIR}"
 
-    # if testing using docker set fixed host names
+    # if testing using docker update vars
     if ( -Not( ${TEST_USING_MAVEN} ) )
     {
-      $AEM_HOST = "author"
-      $AEM_PORT = "8080"
       $TEST_SELENIUM_URL = "${TEST_SELENIUMHUB_SCHEME}://seleniumhub:4444${TEST_SELENIUMHUB_SERVICE}"
+      $PROJECT_ROOT_DIR = "/build/${PARENT_PROJECT_WITH_GIT_NAME}"
     }
 
     $MAVEN_COMMAND=$(CompileMavenCommand "${TEST_DISPATCHER}" "${DRIVER}" "${AEM_HOST}" "${TEST_LOGIN}" "${TEST_MAVEN_CONFIG}" "${AEM_PASSWORD}" "${AEM_PORT}" "${AEM_SCHEME}" "${TEST_SPECS}" "${TEST_SELENIUM_URL}" "${AEM_USERNAME}" "$([system.String]::Join(" ", $TEST_VIEWPORTS))" "${PROJECT_ROOT_DIR}" "${PARENT_PROJECT_NAME}" "${CURRENT_PROJECT_LOCATION}")
@@ -244,13 +243,6 @@ if ( $SELENIUMHUB_HOST -eq "localhost" -Or ([string]::IsNullOrEmpty(${TEST_SELEN
   $script:TEST_SELENIUM_URL="${TEST_SELENIUMHUB_SCHEME}://${LOCAL_IP}:${TEST_SELENIUMHUB_PORT}${TEST_SELENIUMHUB_SERVICE}"
 }
 
-#update host
-if ( $AEM_HOST -eq "localhost" )
-{
-  debug "Test host is set as localhost, updating to use local ip" "info"
-  $script:AEM_HOST="${LOCAL_IP}"
-}
-
 printSectionBanner "Test Configuration:" "warn"
 printSectionLine "AEM_SCHEME:             ${AEM_SCHEME}"
 printSectionLine "AEM_HOST:               ${AEM_HOST}"
@@ -265,13 +257,19 @@ printSectionLine "TEST_DISPATCHER?:       ${TEST_DISPATCHER}"
 printSectionLine "TEST_SKIP_CONVERT?:     ${TEST_SKIP_CONVERT}"
 printSectionLine "TEST_USING_MAVEN?:      ${TEST_USING_MAVEN}"
 
-$script:AEM_AVAILABLE=$(testServer "${AEM_SCHEME}://${AEM_HOST}:${AEM_PORT}")
+if ( $AEM_HOST -eq "author" ) {
+  $script:AEM_AVAILABLE=$(testServer "${AEM_SCHEME}://localhost:4502")
+} else {
+  $script:AEM_AVAILABLE=$(testServer "${AEM_SCHEME}://${AEM_HOST}:${AEM_PORT}")
+}
+
 $script:HUB_AVAILABLE=$(testServer ("${TEST_SELENIUM_URL}").Replace("/wd/hub","") )
 
 printSectionLine "Is Selenium Hub at ${TEST_SELENIUM_URL} available? ${HUB_AVAILABLE}"
 printSectionLine "Is AEM at ${AEM_SCHEME}://${AEM_HOST}:${AEM_PORT} available? ${AEM_AVAILABLE}"
 
-if ( $HUB_AVAILABLE -And $AEM_AVAILABLE )
+
+if ( $HUB_AVAILABLE )
 {
   debug "Selenium Hub and AEM are both up and available!" "info"
 

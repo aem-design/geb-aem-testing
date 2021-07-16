@@ -476,8 +476,14 @@ abstract class FunctionalSpec extends GebReportingSpec {
     }
 
     private def compare(String screenshotFilename, String referenceFilename, String differenceFilename) {
-        def compareCmd = "compare -verbose -metric mae -fuzz 10% \"${screenshotFilename}\" \"${referenceFilename}\" \"${differenceFilename}\" 2>&1 || convert \"${screenshotFilename}\" \"${referenceFilename}\" -compose difference -composite +level-colors black,red \"${differenceFilename}\" 2>&1 | echo \"all: 1.0 (1.0)\""
+        String GLOBAL_PROJECT_CURRENT_NAME = System.properties.getProperty("project.currentname", "")
 
+        def pathprefix = ""
+        if (GLOBAL_PROJECT_CURRENT_NAME != "") {
+            pathprefix = "/build/$GLOBAL_PROJECT_CURRENT_NAME/"
+        }
+        def compareCmd = "compare -verbose -metric mae -fuzz 10% ${pathprefix}${screenshotFilename} ${pathprefix}${referenceFilename} ${pathprefix}${differenceFilename} 2>&1 || convert ${pathprefix}${screenshotFilename} ${pathprefix}${referenceFilename} -compose difference -composite +level-colors black,red ${pathprefix}${differenceFilename} 2>&1 | echo 'all: 1.0 (1.0)'"
+        //printDebug("RUNNING COMPARE", [compareCmd])
         def processErrorText = ""
 
         if (System.properties.getProperty("HAS_COMPARE", "false") == "false" && System.properties.getProperty("HAS_DOCKER", "false") == "false") {
@@ -489,6 +495,11 @@ abstract class FunctionalSpec extends GebReportingSpec {
             processErrorText = getRunDockerCommandOutput(compareCmd)
 
         } else {
+            //if not on windows just run bash script.
+            if (!System.properties['os.name'].toLowerCase().contains('windows')) {
+                compareCmd = "${pathprefix}compare.sh ${pathprefix}${screenshotFilename} ${pathprefix}${referenceFilename} ${pathprefix}${differenceFilename}"
+            }
+
             processErrorText = getCommandOutput(compareCmd)
         }
 
@@ -699,18 +710,18 @@ abstract class FunctionalSpec extends GebReportingSpec {
 
 
     def getCommandOutput(String commandToRun, int wait = 5000) {
-
+        //printDebug("COMPARE", [commandToRun])
         try {
 
             def sout = new StringBuilder(), serr = new StringBuilder()
             def proc = commandToRun.execute()
             proc.consumeProcessOutput(sout, serr)
             proc.waitForOrKill(wait)
-//            printDebug("COMMAND", [sout,serr])
+            //printDebug("COMMAND", [sout,serr])
             return sout
 
         } catch (ignored) {
-//            printDebug("COMMAND ERROR", [ignored])
+            //printDebug("COMMAND ERROR", [ignored])
             //do nothing
         }
         return ""

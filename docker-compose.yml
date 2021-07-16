@@ -102,6 +102,10 @@ services:
       service: testing
     profiles:
       - dotest
+    working_dir: /build/geb-aem-testing/gebaemtesting-testing
+    volumes:
+      - "./:/build/${PARENT_PROJECT_WITH_GIT_NAME}"
+      - "~/.m2:/build/.m2"
     depends_on:
       - author
       - seleniumhub
