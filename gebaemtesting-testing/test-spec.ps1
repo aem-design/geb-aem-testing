@@ -9,7 +9,7 @@ Param(
   [string]$DRIVER_FOLDER = "${PWD}\drivers",
   [switch]$LOGIN = $true,
   [switch]$REPORT = $true,
-  [switch]$DEBUG = $false,
+  [switch]$DODEBUG = $false,
   [switch]$SILENT = $false,
   [string]$TEST_SELENIUMHUB_SCHEME = (&{If($SELENIUMHUB_SCHEME -eq $null) {"http"} else {$SELENIUMHUB_SCHEME}}),
   [string]$TEST_SELENIUMHUB_PORT = (&{If($SELENIUMHUB_PORT -eq $null) {"32768"} else {$SELENIUMHUB_PORT}}),
@@ -25,7 +25,6 @@ Param(
   [string]$AEM_PORT = "4502",
   [string]$AEM_USERNAME = "admin",
   [string]$AEM_PASSWORD = "admin",
-  [string]$TEST_SPECS = "$( (Get-Content ".\test-list") -join ",")",
   [string]$TEST_WORKSPACE = "",
   [switch]$TEST_LOGIN = $false,
   [string]$TEST_MAVEN_CONFIG = "",
@@ -33,7 +32,11 @@ Param(
   [switch]$TEST_SKIP_CONVERT = $false,
   [switch]$TEST_USING_MAVEN = $false,
   [string]$FUNCTIONS_URI = "https://github.com/aem-design/aemdesign-docker/releases/latest/download/functions.ps1",
-  [string]$TEST_VIEWPORTS = "$( (Get-Content ".\test-viewports") -join ",")"
+  [string]$TEST_VIEWPORTS = "$( (Get-Content ".\test-viewports") -join ",")",
+  [string]$DOCKER_COMPOSE_COMMAND = "docker-compose --profile=dotest up testing",
+  [Parameter(Position=0)]
+  [string]$TEST_SPECS = "$( (Get-Content ".\test-list") -join ",")"
+
 )
 
 $SKIP_CONFIG = $true
@@ -141,10 +144,34 @@ Function Do-RunTest
     printSectionLine "Testing Directory: ${CURRENT_PATH}"
     printSectionLine "Testing Sub Directory: ${PARENT_PROJECT_LOCATION}"
 
+    printSectionLine "MAVEN_COMMAND: ${MAVEN_COMMAND}"
+    printSectionLine "PARENT_PROJECT_WITH_GIT: ${PARENT_PROJECT_WITH_GIT}"
+    printSectionLine "PARENT_PROJECT_WITH_GIT_NAME: ${PARENT_PROJECT_WITH_GIT_NAME}"
+    printSectionLine "CURRENT_PROJECT_LOCATION: ${CURRENT_PROJECT_LOCATION}"
+    printSectionLine "MAVEN_DIR: ${MAVEN_DIR}"
+
+    # if testing using docker set fixed host names
+    if ( -Not( ${TEST_USING_MAVEN} ) )
+    {
+      $AEM_HOST = "author"
+      $AEM_PORT = "8080"
+      $TEST_SELENIUM_URL = "${TEST_SELENIUMHUB_SCHEME}://seleniumhub:4444${TEST_SELENIUMHUB_SERVICE}"
+    }
+
     $MAVEN_COMMAND=$(getMavenCommand "${TEST_DISPATCHER}" "${DRIVER}" "${AEM_HOST}" "${TEST_LOGIN}" "${TEST_MAVEN_CONFIG}" "${AEM_PASSWORD}" "${AEM_PORT}" "${AEM_SCHEME}" "${TEST_SPECS}" "${TEST_SELENIUM_URL}" "${AEM_USERNAME}" "$([system.String]::Join(" ", $TEST_VIEWPORTS))" "${PROJECT_ROOT_DIR}" "${PARENT_PROJECT_NAME}" "${CURRENT_PROJECT_LOCATION}")
 
     if ( -Not( ${TEST_USING_MAVEN} ) )
     {
+
+
+      printSubSectionStart "Docker Compose Execute"
+      printSectionLine "MAVEN_COMMAND: ${MAVEN_COMMAND}"
+
+      $Env:MAVEN_COMMAND = "${MAVEN_COMMAND}"
+      $Env:PARENT_PROJECT_WITH_GIT = "${PARENT_PROJECT_WITH_GIT}"
+      $Env:PARENT_PROJECT_WITH_GIT_NAME = "${PARENT_PROJECT_WITH_GIT_NAME}"
+      $Env:CURRENT_PROJECT_LOCATION = "${CURRENT_PROJECT_LOCATION}"
+      $Env:MAVEN_DIR = "${MAVEN_DIR}"
 
 
       # run docker container as current use
@@ -154,25 +181,22 @@ Function Do-RunTest
       # pass maven command location for .m2 dir
       # run bash with login to allow usage of RVM
       # auto-remove container after its done
-      $DOCKER_COMMAND="docker run -d --rm --net=host --name ${DRIVER} -v ${PARENT_PROJECT_WITH_GIT}:/build/${PARENT_PROJECT_WITH_GIT_NAME} -v ${MAVEN_DIR}:/build/.m2 -w ""/build/${CURRENT_PROJECT_LOCATION}"" ${TEST_IMAGE} bash -l -c '${MAVEN_COMMAND} -Dmaven.repo.local=/build/.m2/repository' "
 
-      debug "${DOCKER_COMMAND}"
+      Invoke-Expression "${DOCKER_COMPOSE_COMMAND}"
 
-      printSubSectionStart "Docker Command Execute"
-
-      Invoke-Expression "${DOCKER_COMMAND}"
-
-      printSubSectionEnd "Docker Command Execute"
+      printSubSectionEnd "Docker Compose Execute"
     } else {
+      
       printSubSectionStart "Direct Maven Command Execute"
-      debug "${MAVEN_COMMAND}"
+      debug "${MAVEN_COMMAND}" "warn"
       Invoke-Expression "${MAVEN_COMMAND}"
       printSubSectionEnd "Direct Maven Command Execute"
 
-      printSubSectionStart "Convert Reports"
-      Invoke-Expression ".\asciidoctor-convert-reports $(&{If($SILENT) {"-SILENT"}})"
-      printSubSectionEnd "Convert Reports"
     }
+
+    printSubSectionStart "Convert Reports"
+    Invoke-Expression ".\asciidoctor-convert-reports $(&{If($SILENT) {"-SILENT"}})"
+    printSubSectionEnd "Convert Reports"
 
 
   } else {
@@ -192,11 +216,6 @@ Function Do-MonitorTests
 
   $script:OPEN_REPORTS = $TEST_DRIVER_NAME
   $OPEN_REPORTS_LENGTH = $OPEN_REPORTS.Length
-
-  if (Test-Path "${DOCKER_LOGS_FOLDER}" -PathType leaf)
-  {
-    New-Item -ItemType "directory" -Path "${DOCKER_LOGS_FOLDER}"
-  }
 
   printSubSectionStart "Watch Logs and Save to Log file"
 
@@ -316,11 +335,6 @@ if ( $HUB_AVAILABLE -And $AEM_AVAILABLE )
   printSectionBanner "Starting Tests on $(LocalIP)" "info"
 
   runTests ${TEST_DRIVER_NAME}
-
-  if ( -Not( ${TEST_USING_MAVEN} ) )
-  {
-    monitorTests ${TEST_DRIVER_NAME}
-  }
 
 } else {
   debug "Either Selenium Hub or AEM is not currently available!" "error"
