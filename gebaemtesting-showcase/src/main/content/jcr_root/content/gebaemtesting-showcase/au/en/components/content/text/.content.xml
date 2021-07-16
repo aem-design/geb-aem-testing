@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="cq:Page">
+    <jcr:content
+        cq:lastModified="{Date}2021-07-15T13:05:02.444+10:00"
+        cq:lastModifiedBy="admin"
+        cq:template="/conf/gebaemtesting-showcase/settings/wcm/templates/content"
+        jcr:primaryType="cq:PageContent"
+        jcr:title="Text"
+        sling:resourceType="core/wcm/components/page/v2/page">
+        <root
+            jcr:lastModified="{Date}2021-07-13T20:19:03.076+10:00"
+            jcr:lastModifiedBy="admin"
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="core/wcm/components/container/v1/container">
+            <navigation
+                jcr:created="{Date}2021-07-13T20:19:15.186+10:00"
+                jcr:createdBy="admin"
+                jcr:lastModified="{Date}2021-07-13T20:19:15.186+10:00"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="core/wcm/components/navigation/v1/navigation"/>
+            <title
+                jcr:created="{Date}2021-07-13T20:19:19.806+10:00"
+                jcr:createdBy="admin"
+                jcr:lastModified="{Date}2021-07-13T20:19:19.806+10:00"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="core/wcm/components/title/v2/title"/>
+            <container1
+                jcr:created="{Date}2021-07-13T20:19:26.566+10:00"
+                jcr:createdBy="admin"
+                jcr:lastModified="{Date}2021-07-15T13:02:40.735+10:00"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="core/wcm/components/container/v1/container"
+                id="container1">
+                <text
+                    jcr:created="{Date}2021-07-13T20:19:30.436+10:00"
+                    jcr:createdBy="admin"
+                    jcr:lastModified="{Date}2021-07-15T13:05:02.441+10:00"
+                    jcr:lastModifiedBy="admin"
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="core/wcm/components/text/v2/text"
+                    id="text1"
+                    text="&lt;h1>Heading 1&lt;/h1>&#xd;&#xa;&lt;h2>Heading 2&lt;/h2>&#xd;&#xa;&lt;h3>Heading 3&lt;/h3>&#xd;&#xa;&lt;h4>Heading 4&lt;/h4>&#xd;&#xa;&lt;h5>Heading 5&lt;/h5>&#xd;&#xa;&lt;h6>Heading 6&lt;/h6>&#xd;&#xa;&lt;p>Paragraph&lt;/p>&#xd;&#xa;&lt;blockquote>Blockquote&lt;/blockquote>&#xd;&#xa;&lt;p>&lt;b>Bold&lt;/b> &lt;i>Italic&lt;/i> &lt;u>Underline&lt;/u> &lt;sub>Subscript&lt;/sub> &lt;sup>Superscript&lt;/sup> &lt;a target=&quot;_blank&quot; href=&quot;/content/gebaemtesting-showcase/au/en/components/content/text.html&quot; adhocenable=&quot;false&quot;>link&lt;/a>&amp;nbsp;special characters: ÷, &lt;span class=&quot;color1&quot;>&amp;quot;Style Green&amp;quot;&lt;/span>&amp;nbsp;no style &lt;span class=&quot;color2&quot;>&amp;quot;Style Red&amp;quot;&lt;/span> no style&lt;/p>&#xd;&#xa;&lt;p>Left Aligned&lt;/p>&#xd;&#xa;&lt;p style=&quot;text-align: center;&quot;>Center Text&lt;/p>&#xd;&#xa;&lt;p style=&quot;text-align: right;&quot;>Right Aligned&lt;/p>&#xd;&#xa;&lt;p>&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;List&lt;/p>&#xd;&#xa;&lt;ul>&#xd;&#xa;&lt;li>item 1&lt;/li>&#xd;&#xa;&lt;li>item 2&lt;/li>&#xd;&#xa;&lt;li>item 3&lt;/li>&#xd;&#xa;&lt;/ul>&#xd;&#xa;&lt;div>&amp;nbsp;&lt;/div>&#xd;&#xa;&lt;p>List&lt;/p>&#xd;&#xa;&lt;ol>&#xd;&#xa;&lt;li>item 1&lt;/li>&#xd;&#xa;&lt;li>item 2&lt;/li>&#xd;&#xa;&lt;li>item 3&lt;/li>&#xd;&#xa;&lt;/ol>&#xd;&#xa;&lt;table cellspacing=&quot;0&quot; cellpadding=&quot;1&quot; border=&quot;1&quot;>&#xd;&#xa;&lt;tbody>&lt;tr>&lt;th>Hader&lt;/th>&#xd;&#xa;&lt;th>Col1&lt;/th>&#xd;&#xa;&lt;th>Col1&lt;/th>&#xd;&#xa;&lt;th>Col1&lt;/th>&#xd;&#xa;&lt;/tr>&lt;tr>&lt;td>Row1&lt;/td>&#xd;&#xa;&lt;td>●&lt;/td>&#xd;&#xa;&lt;td>○&lt;/td>&#xd;&#xa;&lt;td>&lt;span class=&quot;color1&quot;>○&lt;/span>&lt;/td>&#xd;&#xa;&lt;/tr>&lt;tr>&lt;td>Row2&lt;/td>&#xd;&#xa;&lt;td>&lt;span class=&quot;color1&quot;>●&lt;/span>&lt;/td>&#xd;&#xa;&lt;td>&lt;span class=&quot;color2&quot;>●&lt;/span>&lt;/td>&#xd;&#xa;&lt;td>&lt;span class=&quot;color2&quot;>○&lt;/span>&lt;/td>&#xd;&#xa;&lt;/tr>&lt;/tbody>&lt;/table>&#xd;&#xa;&lt;div>&amp;nbsp;&lt;/div>&#xd;&#xa;&lt;div>No Indent&lt;/div>&#xd;&#xa;&lt;div style=&quot;margin-left: 40.0px;&quot;>Indent&lt;/div>&#xd;&#xa;&lt;div style=&quot;margin-left: 80.0px;&quot;>Indent&lt;/div>&#xd;&#xa;&lt;div style=&quot;margin-left: 120.0px;&quot;>Indent&lt;/div>&#xd;&#xa;&lt;div style=&quot;margin-left: 80.0px;&quot;>Indent&lt;/div>&#xd;&#xa;&lt;div style=&quot;margin-left: 40.0px;&quot;>Indent&lt;/div>&#xd;&#xa;&lt;div>No Indent&lt;/div>&#xd;&#xa;&lt;div>&amp;nbsp;&lt;/div>&#xd;&#xa;&lt;div>BR&lt;br>&#xd;&#xa;BR&lt;/div>&#xd;&#xa;"
+                    textIsRich="true"/>
+            </container1>
+        </root>
+    </jcr:content>
+</jcr:root>

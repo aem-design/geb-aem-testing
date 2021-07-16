@@ -4,15 +4,18 @@
     jcr:primaryType="cq:Page">
     <au/>
     <jcr:content
-        cq:allowedTemplates="[/conf/gebaemtesting-showcase/settings/wcm/templates/.*]"
+        cq:allowedTemplates="/conf/gebaemtesting-showcase/settings/wcm/templates/.*"
         cq:deviceGroups="[/etc/mobile/groups/responsive]"
+        cq:lastModified="{Date}2021-07-15T12:58:58.203+10:00"
+        cq:lastModifiedBy="admin"
+        cq:redirectTarget="/content/gebaemtesting-showcase/au/en"
         cq:template="/conf/gebaemtesting-showcase/settings/wcm/templates/content"
         jcr:isCheckedOut="{Boolean}true"
         jcr:mixinTypes="[cq:ReplicationStatus,mix:versionable]"
         jcr:primaryType="nt:unstructured"
         jcr:title="GEB AEM Testing - Showcase"
         jcr:uuid="825cafd6-5b12-4a10-a1cb-557c35da079e"
-        sling:redirect="{Boolean}true"
+        sling:redirect="true"
         sling:redirectStatus="{Long}302"
         sling:resourceType="core/wcm/components/page/v2/page"
         redirectTarget="/content/gebaemtesting/au/en"/>
