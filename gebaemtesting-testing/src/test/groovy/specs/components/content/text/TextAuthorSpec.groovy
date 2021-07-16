@@ -10,7 +10,7 @@ class TextAuthorSpec extends ComponentSpec {
     String pathPage = "components/content/text"
     String pathSite = "content/gebaemtesting-showcase"
     String language = "au/en"
-    String componentPath = "jcr:content/root/article/par/contentblock1/par/text"
+    String componentPath = "jcr:content/root/container1/text"
 
     def setupSpec() {
         loginAsAdmin()

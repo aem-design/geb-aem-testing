@@ -10,7 +10,7 @@ class LinkScreenshotSpec extends ComponentSpec {
     String pathPage = "components/content/link"
     String pathSite = "content/gebaemtesting-showcase"
     String language = "au/en"
-    String componentPath = "jcr:content/root/article/par/contentblock/par/contentblock1/par/link"
+    String componentPath = "jcr:content/root/container1/button"
 
     def setupSpec() {
         loginAsAdmin()
