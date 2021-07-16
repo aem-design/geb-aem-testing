@@ -5,7 +5,7 @@
         cq:deviceGroups="[/etc/mobile/groups/responsive]"
         cq:lastModified="{Date}2021-07-13T20:19:03.084+10:00"
         cq:lastModifiedBy="admin"
-        cq:lastReplicated="{Date}2021-06-09T06:36:41.141+10:00"
+        cq:lastReplicated="{Date}2021-07-16T14:42:22.408Z"
         cq:lastReplicatedBy="admin"
         cq:lastReplicationAction="Activate"
         cq:template="/conf/gebaemtesting-showcase/settings/wcm/templates/content"

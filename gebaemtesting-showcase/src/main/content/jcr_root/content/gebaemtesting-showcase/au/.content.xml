@@ -1,13 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:mix="http://www.jcp.org/jcr/mix/1.0"
     jcr:primaryType="cq:Page">
     <jcr:content
         cq:lastModified="{Date}2021-07-15T12:35:32.693+10:00"
         cq:lastModifiedBy="admin"
+        cq:lastReplicated="{Date}2021-07-16T14:41:48.883Z"
+        cq:lastReplicatedBy="admin"
+        cq:lastReplicationAction="Activate"
         cq:redirectTarget="/content/gebaemtesting-showcase/au/en"
         cq:template="/conf/gebaemtesting-showcase/settings/wcm/templates/content"
+        jcr:isCheckedOut="{Boolean}true"
+        jcr:mixinTypes="[mix:versionable]"
         jcr:primaryType="cq:PageContent"
         jcr:title="AU"
+        jcr:uuid="10b94482-dfcb-482a-88ea-5eba5f438310"
         sling:redirect="true"
         sling:redirectStatus="{Long}302"
         sling:resourceType="core/wcm/components/page/v2/page"

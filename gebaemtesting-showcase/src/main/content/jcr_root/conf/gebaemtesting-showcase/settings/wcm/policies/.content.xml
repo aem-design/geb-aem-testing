@@ -16,11 +16,40 @@
                                 sling:resourceType="wcm/core/components/policy/policy"
                                 components="[group:Core Content,group:Core Structure]"
                                 layoutDisabled="false">
-                                <jcr:content jcr:primaryType="nt:unstructured"/>
+                                <jcr:content
+                                    cq:lastReplicated="{Date}2021-07-16T14:44:23.881Z"
+                                    cq:lastReplicatedBy="admin"
+                                    cq:lastReplicationAction="Activate"
+                                    jcr:mixinTypes="[cq:ReplicationStatus]"
+                                    jcr:primaryType="nt:unstructured"/>
                             </policy_1626171281687>
                         </container>
                     </v1>
                 </container>
+                <navigation jcr:primaryType="nt:unstructured">
+                    <v1 jcr:primaryType="nt:unstructured">
+                        <navigation jcr:primaryType="nt:unstructured">
+                            <policy_1626446894795
+                                jcr:lastModified="{Date}2021-07-16T14:49:01.041Z"
+                                jcr:lastModifiedBy="admin"
+                                jcr:primaryType="nt:unstructured"
+                                jcr:title="Content Navigation Policy"
+                                sling:resourceType="wcm/core/components/policy/policy"
+                                collectAllPages="true"
+                                disableShadowing="false"
+                                navigationRoot="/content/gebaemtesting-showcase/au/en"
+                                structureDepth="6"
+                                structureStart="1">
+                                <jcr:content
+                                    cq:lastReplicated="{Date}2021-07-16T14:50:31.381Z"
+                                    cq:lastReplicatedBy="admin"
+                                    cq:lastReplicationAction="Activate"
+                                    jcr:mixinTypes="[cq:ReplicationStatus]"
+                                    jcr:primaryType="nt:unstructured"/>
+                            </policy_1626446894795>
+                        </navigation>
+                    </v1>
+                </navigation>
             </components>
         </wcm>
     </core>
