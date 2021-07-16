@@ -6,9 +6,16 @@ services:
     image: selenium/hub:3.141.59
     hostname: seleniumhub
     environment:
-      - "GRID_TIMEOUT=10"
+      - GRID_TIMEOUT=10
+      - GRID_DEBUG=true
     ports:
       - 32768:4444
+    networks:
+      - default
+      - seleniumgrid
+      - author-network
+      - publish-network
+      - dispatcher-network
 
   selenium-node-chrome:
     image: selenium/node-chrome:3.141.59
@@ -17,3 +24,15 @@ services:
       - "GRID_TIMEOUT=10"
       - "HUB_HOST=seleniumhub"
     shm_size: '1g'
+    networks:
+      - default
+      - seleniumgrid
+      - author-network
+      - publish-network
+      - dispatcher-network
+
+networks:
+  seleniumgrid:
+  author-network:
+  publish-network:
+  dispatcher-network:

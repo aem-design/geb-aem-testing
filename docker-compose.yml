@@ -13,8 +13,6 @@ services:
       service: selenium-node-chrome
     depends_on:
       - seleniumhub
-    links:
-      - seleniumhub
 
   author:
     extends:
@@ -27,6 +25,19 @@ services:
       service: publish
     depends_on:
       - author
-    links:
-      - author
 
+  testing:
+    extends:
+      file: ./docker/testing/docker-compose.yml
+      service: testing
+    profiles:
+      - dotest
+    depends_on:
+      - author
+      - seleniumhub
+
+networks:
+  seleniumgrid:
+  author-network:
+  publish-network:
+  dispatcher-network:

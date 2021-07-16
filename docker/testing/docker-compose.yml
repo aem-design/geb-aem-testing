@@ -1,0 +1,36 @@
+version: "3.8"
+
+services:
+
+  testing:
+    image: aemdesign/centos-java-buildpack
+    hostname: testing
+    environment:
+      # maven
+      - MAVEN_COMMAND
+      # docker
+      - PARENT_PROJECT_WITH_GIT
+      - PARENT_PROJECT_WITH_GIT_NAME
+      - CURRENT_PROJECT_LOCATION
+      - MAVEN_DIR
+    command:
+      - bash
+      - -l
+      - -c
+      - "${MAVEN_COMMAND} -Dmaven.repo.local=/build/.m2/repository"
+    working_dir: "/build/${CURRENT_PROJECT_LOCATION}"
+    volumes:
+      - "${PARENT_PROJECT_WITH_GIT}:/build/${PARENT_PROJECT_WITH_GIT_NAME}"
+      - "${MAVEN_DIR}:/build/.m2"
+    networks:
+      - seleniumgrid
+      - author-network
+      - publish-network
+      - dispatcher-network
+      - default
+
+networks:
+  seleniumgrid:
+  author-network:
+  publish-network:
+  dispatcher-network:
