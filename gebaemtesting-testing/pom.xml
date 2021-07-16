@@ -7,7 +7,7 @@
     <parent>
         <groupId>design.aem.gebaemtesting</groupId>
         <artifactId>gebaemtesting-parent</artifactId>
-        <version>.</version>
+        <version>2021.7.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -17,7 +17,7 @@
     <artifactId>gebaemtesting-testing</artifactId>
     <groupId>design.aem.gebaemtesting</groupId>
     <packaging>jar</packaging>
-    <version>.</version>
+    <version>2021.7.0</version>
     <name>AEM :: AEM Tenant :: GEB AEM Testing :: Testing</name>
     <description>GEB AEM Testing Automation Testing</description>
 
@@ -218,39 +218,6 @@
 
         </plugins>
     </build>
-
-    <profiles>
-        <profile>
-            <id>notwindows</id>
-            <activation>
-                <os>
-                    <family>!windows</family>
-                </os>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>exec-maven-plugin</artifactId>
-                        <version>1.6.0</version>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <executions>
-                            <execution>
-                                <id>compile asciidoctor reports using ruby</id>
-                                <phase>test</phase>
-                                <goals>
-                                    <goal>exec</goal>
-                                </goals>
-                                <configuration>
-                                    <executable>bash</executable>
-                                    <commandlineArgs>./asciidoctor-convert-reports -html -root ${project.buildDirectory}</commandlineArgs>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 
     <dependencyManagement>
         <dependencies>

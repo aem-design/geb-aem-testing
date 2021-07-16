@@ -18,7 +18,7 @@
     <groupId>design.aem.gebaemtesting</groupId>
     <artifactId>gebaemtesting-parent</artifactId>
     <packaging>pom</packaging>
-    <version>.</version>
+    <version>2021.7.0</version>
     <name>AEM :: AEM Tenant :: GEB AEM Testing</name>
     <description>gebaemtesting</description>
 

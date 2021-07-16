@@ -8,7 +8,7 @@
     <parent>
         <groupId>design.aem.gebaemtesting</groupId>
         <artifactId>gebaemtesting-parent</artifactId>
-        <version>.</version>
+        <version>2021.7.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -20,7 +20,7 @@
     <packaging>content-package</packaging>
     <name>AEM :: AEM Tenant :: GEB AEM Testing :: Showcase</name>
     <description>This is a showcase site.</description>
-    <version>.</version>
+    <version>2021.7.0</version>
 
     <developers>
         <developer>
