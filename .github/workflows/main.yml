@@ -91,23 +91,26 @@ jobs:
 
       - name: wait for aem using ansible
         run: |
-          ansible-playbook automation-test-sdk.yml
+          docker-compose up testingprep
 
       - name: mvn deploy current project
         run: |
-          $DOCKER_COMMAND mvn clean package -DskipTests -B -Dmaven.repo.local=./build/.m2/repository
+          docker-compose up authordeploy
 
       - name: wait for aem using ansible
         run: |
-          ansible-playbook automation-test.yml
+          docker-compose up testingprep
 
       - name: start automation tests using docker-compose
         run: |
-          cd aemdesign-testing
           docker-compose up testing
 
       - name: Stop the stack
         run: docker-compose down
+
+      - name: check if all tests succced
+        run: |
+          docker-compose up testingprep
 
       - name: create release ${{ env.GITHUB_TAG }}
         if: github.ref == 'refs/heads/main'

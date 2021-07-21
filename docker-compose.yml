@@ -1,4 +1,4 @@
-version: "3.8"
+version: "2.4"
 
 services:
 
@@ -104,8 +104,37 @@ services:
       - dotest
     working_dir: /build/geb-aem-testing/gebaemtesting-testing
     volumes:
-      - "./:/build/${PARENT_PROJECT_WITH_GIT_NAME}"
+      - "./:/build/geb-aem-testing"
       - "~/.m2:/build/.m2"
+    depends_on:
+      - author
+      - seleniumhub
+      - testingprep
+
+  testingprep:
+    extends:
+      file: ./docker/testing/docker-compose.yml
+      service: testingprep
+    volumes:
+      - ./docker/testing/playbooks:/ansible/playbooks
+    profiles:
+      - dotest
+    depends_on:
+      - author
+      - seleniumhub
+
+  testingcheck:
+    extends:
+      file: ./docker/testing/docker-compose.yml
+      service: testingcheck
+    volumes:
+      - ./:/build
+    profiles:
+      - dotest
+    volumes:
+      - ./:/build
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./docker/testing/scripts/gettestresult.sh:/test.sh
     depends_on:
       - author
       - seleniumhub

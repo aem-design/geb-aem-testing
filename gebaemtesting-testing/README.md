@@ -23,40 +23,54 @@ You can commit these files to git, and they will be used as a reference source f
 
 
 
-Start Selenium Hub and Node
+## Running Tests using Docker Compose
+
+To run tests, run following command in `gebaemtesting-testing` directory:
+
+```
+./test-spec
+```
+
+## Running Tests using Local Maven
+
+You can test the execution of tests on your local system using following command. This will run tests using local selenium and AEM instances and will execute all tests listed in `test-list` with viewports listed in `test-viewports`: 
 
 ```powershell
-.\seleniumhub-start
+./test-spec -SILENT -TEST_USING_MAVEN true
 ```
+
+This will use maven for main execution but will attempt to use Docker for ImageMagic and Asciidoc reports.
+
+## Additional Usage
 
 Using Powershell 7 execute selected tests run following command:
 
 ```powershell
-.\test-spec.ps1 -TEST_PORT 4502 -TEST_HOST 10.0.0.12 -TEST_SELENIUM_URL http://10.0.0.12:32768/wd/hub -TEST_SPECS NotificationCardA* -TEST_VEWPORTS "XLG"
+.\test-spec.ps1 -TEST_SPECS TextA*
 ```
 
 On Linux you can do following command:
 
 ```bash
-./test-spec  --host 192.168.1.12 --url http://192.168.1.12:32768/wd/hub --tests NotificationCardA*
+./test-spec --tests TextA*
 ```
 
-Above commands will only execute `NotificationCardAuthorSpec`.
+Above commands will only execute `TextAuthorSpec`.
 
 Update `test-list` with test you want to run without specifying parameters, this should be a complete list of test you want to run.
 
 ```powershell
-.\test-spec.ps1 -TEST_PORT 4512 
+.\test-spec.ps1 
 ```
 
-Stop Selenium Hub and Node
+To only test specific viewports specify `TEST_VIEWPORTS` param
 
 ```powershell
-.\seleniumhub-stop
+.\test-spec -TEST_VIEWPORTS "XLG,SM"
 ```
 
 
-
+## Docs
 
 - [Authoring Pages](https://docs.adobe.com/docs/en/aem/6-0/author/page-authoring.html)
 - [Authoring - the Environment and Tools](https://docs.adobe.com/docs/en/aem/6-0/author/page-authoring/author-environment-tools.html)
@@ -68,13 +82,13 @@ Stop Selenium Hub and Node
 - [Spock and Geb in Action](http://www.slideshare.net/InfoQ/taming-functional-web-testing-with-spock-and-geb)
 - [Taming Functional Web Testing with Spock and Geb](http://www.slideshare.net/InfoQ/taming-functional-web-testing-with-spock-and-geb)
 
-# Maven Reports
+## Maven Reports
 
 - [Spock Reports Extension](https://github.com/renatoathaydes/spock-reports)
 - [Surefire Reports](http://maven.apache.org/surefire/maven-surefire-report-plugin/usage.html)
 
 
-# ASCII Doc Reports
+## ASCII Doc Reports
 Adding screenshots to Test Steps is done by detecting a text string in code block and then adding picking a screenshot to show.
 Update the following line in ```spect-template.ad```:
 
@@ -100,7 +114,7 @@ For multi-screenshot print check following block to ensure columns are printed.
 
 If HTML report are not showing expected result check base templates in ```spock-reports/.ad``` these are converted to html.
 
-# Driver Specific Parameters
+## Driver Specific Parameters
 
 
 You can pass following variable via command line to specify browserstack parameters.
@@ -137,14 +151,3 @@ For more information please see following reference site [https://www.browsersta
 | GEB_BROWSERSTACK_GEOLOCATION       | geb.browserstack.geoLocation       | browserstack.geoLocation     |
 | GEB_BROWSERSTACK_NETWORKSPEED      | geb.browserstack.customNetwork     | browserstack.customNetwork   |
 | GEB_BROWSERSTACK_DEVICEORIENTATION | geb.browserstack.deviceOrientation | deviceOrientation            |
-
-
-## Running Tests without Docker
-
-You can test the execution of tests on your local system using following command. This will run tests using local selenium and AEM instances and will execute all tests listed in `test-list` with viewports listed in `test-viewports`: 
-
-```powershell
-./test-spec -SILENT -TEST_USING_MAVEN true
-```
-
-This will use maven for main execution but will attempt to use Docker for ImageMagic and Asciidoc reports.

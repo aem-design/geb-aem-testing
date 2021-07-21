@@ -1,4 +1,4 @@
-version: "3.8"
+version: "2.4"
 
 services:
 
@@ -15,8 +15,8 @@ services:
       - 4502:8080
       - 30303:58242
     environment:
-      - "AEM_RUNMODE=-Dsling.run.modes=author,crx3,crx3tar,localdev"
-      - "AEM_JVM_OPTS=-server -Xms248m -Xmx1524m -XX:MaxDirectMemorySize=256M -XX:+CMSClassUnloadingEnabled -Djava.awt.headless=true -Dorg.apache.felix.http.host=0.0.0.0 -Xdebug -Xrunjdwp:transport=dt_socket,server=y,address=58242,suspend=n"
+      - AEM_RUNMODE=-Dsling.run.modes=author,crx3,crx3tar,localdev
+      - AEM_JVM_OPTS=-server -Xms248m -Xmx1524m -XX:MaxDirectMemorySize=256M -XX:+CMSClassUnloadingEnabled -Djava.awt.headless=true -Dorg.apache.felix.http.host=0.0.0.0 -Xdebug -Xrunjdwp:transport=dt_socket,server=y,address=58242,suspend=n
     labels:
       # note that you want this frontened to match the last. otherwise it will match login.${HOST_DOMAIN}"
       traefik.frontend.priority: 1
@@ -36,13 +36,13 @@ services:
       - dispatcher-network
 
   authordeploy:
-    image: aemdesign/centos-java-buildpack
+    image: aemdesign/centos-java-buildpack:jdk11
     hostname: authordeploy
     command:
       - bash
       - -l
       - -c
-      - "cd /build/source/gebaemtesting-showcase && mvn -DskipTests -e -U -P autoInstallPackage clean install -Daem.port=8080 -Daem.host=author -Dmaven.repo.local=/build/.m2/repository"
+      - "cd /build/source/gebaemtesting-showcase && mvn -DskipTests -e -U -P autoInstallPackage clean install -Daem.port=8080 -Daem.host=author"
     working_dir: "/build/source"
     volumes:
       - "../../:/build/source"
@@ -63,8 +63,8 @@ services:
       - 4503:8080
       - 30304:58242
     environment:
-      - "AEM_RUNMODE=-Dsling.run.modes=publish,crx3,crx3tar,localdev"
-      - "AEM_JVM_OPTS=-server -Xms248m -Xmx1524m -XX:MaxDirectMemorySize=256M -XX:+CMSClassUnloadingEnabled -Djava.awt.headless=true -Dorg.apache.felix.http.host=0.0.0.0 -Xdebug -Xrunjdwp:transport=dt_socket,server=y,address=58242,suspend=n"
+      - AEM_RUNMODE=-Dsling.run.modes=publish,crx3,crx3tar,localdev
+      - AEM_JVM_OPTS=-server -Xms248m -Xmx1524m -XX:MaxDirectMemorySize=256M -XX:+CMSClassUnloadingEnabled -Djava.awt.headless=true -Dorg.apache.felix.http.host=0.0.0.0 -Xdebug -Xrunjdwp:transport=dt_socket,server=y,address=58242,suspend=n
     labels:
       # note that you want this frontened to match the last. otherwise it will match login.${HOST_DOMAIN}"
       traefik.frontend.priority: 1
@@ -82,13 +82,13 @@ services:
     - publish-network
 
   publishdeploy:
-    image: aemdesign/centos-java-buildpack
+    image: aemdesign/centos-java-buildpack:jdk11
     hostname: publishdeploy
     command:
       - bash
       - -l
       - -c
-      - "cd /build/source/gebaemtesting-showcase && mvn -DskipTests -e -U -P autoInstallPackage clean install -Daem.port=8080 -Daem.host=publish -Dmaven.repo.local=/build/.m2/repository"
+      - "cd /build/source/gebaemtesting-showcase && mvn -DskipTests -e -U -P autoInstallPackage clean install -Daem.port=8080 -Daem.host=publish"
     working_dir: "/build/source"
     volumes:
       - "../../:/build/source"
@@ -103,9 +103,9 @@ services:
       - 9090:8080
       - 9433:8433
     environment:
-      - "RENDERER_PORT=4503"
-      - "RENDERER_HOST=publish"
-      - "DISPATCHER_CONFIG=publish"
+      - RENDERER_PORT=4503
+      - RENDERER_HOST=publish
+      - DISPATCHER_CONFIG=publish
     labels:
       # note that you want this frontened to match the last. otherwise it will match login.${HOST_DOMAIN}"
       traefik.frontend.priority: 1

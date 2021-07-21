@@ -190,9 +190,12 @@ Function RunTest
 
     }
 
-    printSubSectionStart "Convert Reports"
-    Invoke-Expression ".\asciidoctor-convert-reports -SILENT"
-    printSubSectionEnd "Convert Reports"
+    if ( -Not( ${TEST_SKIP_CONVERT} ) )
+    {
+      printSubSectionStart "Convert Reports"
+      Invoke-Expression ".\asciidoctor-convert-reports -SILENT"
+      printSubSectionEnd "Convert Reports"
+    }
 
 
   } else {

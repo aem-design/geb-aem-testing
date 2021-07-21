@@ -1,4 +1,4 @@
-version: "3.8"
+version: "2.4"
 
 services:
 
@@ -31,8 +31,8 @@ services:
     image: selenium/node-chrome:3.141.59
     hostname: selenium-node-chrome
     environment:
-      - "GRID_TIMEOUT=10"
-      - "HUB_HOST=seleniumhub"
+      - GRID_TIMEOUT=10
+      - HUB_HOST=seleniumhub
     shm_size: '1g'
     networks:
       - default

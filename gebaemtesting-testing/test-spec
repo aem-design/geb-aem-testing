@@ -6,6 +6,9 @@ SKIP_PRINT_CONFIG=true
 
 source "../scripts/functions.sh"
 
+WSLVAR=$(/usr/bin/which wslvar 2>/dev/null)
+WSLPATH=$(/usr/bin/which wslpath 2>/dev/null)
+
 # get default from exported variables
 TEST_SELENIUMHUB_SCHEME=${SELENIUMHUB_SCHEME:-http}
 TEST_SELENIUMHUB_PORT=${SELENIUMHUB_PORT:-32768}
@@ -64,10 +67,9 @@ runTest() {
 
   printSectionBanner "RUNNING TEST FOR DRIVER: ${DRIVER}"
 
-
   # Check if the container exists
-  if [[ ! "$(${DOCKER} ps -q -f name=${DRIVER})" ]]; then
-      if [[ "$(${DOCKER} ps -aq -f status=exited -f name=${DRIVER})" ]]; then
+  if [[ "${DOCKER}" == "" || ! "$(${DOCKER} ps -q -f name=${DRIVER})" ]]; then
+      if [[ "${DOCKER}" != "" && "$(${DOCKER} ps -aq -f status=exited -f name=${DRIVER})" ]]; then
         # cleanup
         printSectionLine "Removing container:"
         ${DOCKER} rm ${DRIVER}
@@ -87,11 +89,16 @@ runTest() {
         MAVEN_DIR="$(fixPath "$MAVEN_DIR")"
       fi
 
-      # reuse users .m2 folder
-      local WSL_HOME="$(wslpath "$(wslvar USERPROFILE)")"
-      if [[ ! "${WSL_HOME}" == "" ]]; then
-          MAVEN_DIR="${WSL_HOME}/.m2"
+      if [[ "$WSLVAR" != "" ]]; then
+        # reuse users .m2 folder
+        local WSL_HOME="$(wslpath "$(wslvar USERPROFILE)")"
+        if [[ ! "${WSL_HOME}" == "" ]]; then
+            MAVEN_DIR="${WSL_HOME}/.m2"
+        fi
       fi
+
+      printSectionLine "MAVEN_DIR: ${MAVEN_DIR}"
+
 
       printSectionLine "Project Root Directory: ${PROJECT_ROOT_DIR}"
       printSectionLine "Maven Directory: ${MAVEN_DIR}"
@@ -122,7 +129,7 @@ runTest() {
         # pass maven command location for .m2 dir
         # run bash with login to allow usage of RVM
         # auto-remove container after its done
-        DOCKER_COMMAND="${DOCKER} run -d --user $(id -u):$(id -g) --rm --name ${DRIVER} -v ${PARENT_PROJECT_WITH_GIT}:/build/${PARENT_PROJECT_NAME} -v ${MAVEN_DIR}:/build/.m2 -w "/build/${PARENT_PROJECT_NAME}/${PARENT_PROJECT_LOCATION}" ${TEST_IMAGE} bash -l -c \"${MAVEN_COMMAND} -Dmaven.repo.local=/build/.m2/repository\""
+        DOCKER_COMMAND="${DOCKER} run -d --user $(id -u):$(id -g) --rm --name ${DRIVER} -v ${PARENT_PROJECT_WITH_GIT}:/build/${PARENT_PROJECT_NAME} -v ${MAVEN_DIR}:/build/.m2 -w "/build/${PARENT_PROJECT_NAME}/${PARENT_PROJECT_LOCATION}" ${TEST_IMAGE} bash -l -c \"${MAVEN_COMMAND}\""
 
         debug "${DOCKER_COMMAND}"
 
@@ -133,6 +140,8 @@ runTest() {
       else
         printSubSectionStart "Direct Maven Command Execute"
         debug "${MAVEN_COMMAND}"
+
+        read -p "FFF"
         ${MAVEN_COMMAND}
         printSubSectionEnd "Direct Maven Command Execute"
 
@@ -144,6 +153,7 @@ runTest() {
   else
       printSectionLine "Container is already running: $DRIVER"
   fi
+
 }
 
 runTests() {

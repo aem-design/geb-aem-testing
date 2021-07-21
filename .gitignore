@@ -36,3 +36,5 @@ node-config/package-lock.json
 
 #groovy temp
 .bundle/cache/**
+
+docker/testing/playbooks/roles/*
