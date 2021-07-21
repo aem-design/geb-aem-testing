@@ -112,10 +112,6 @@ jobs:
       - name: Stop the stack
         run: docker-compose down
 
-      - name: check if all tests succced
-        run: |
-          docker-compose up testingprep
-
       - name: create release ${{ env.GITHUB_TAG }}
         if: github.ref == 'refs/heads/main'
         id: create_release
