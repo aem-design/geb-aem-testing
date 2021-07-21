@@ -59,12 +59,12 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
-      - name: install dependencies
-        run: |
-          pip3 install --upgrade pip
-          pip3 install --ignore-installed PyYAML
-          pip3 install ansible docker docker-compose
-          ansible-galaxy install -r requirements.yml
+      # - name: install dependencies
+      #   run: |
+      #     pip3 install --upgrade pip
+      #     pip3 install --ignore-installed PyYAML
+      #     pip3 install ansible docker docker-compose
+      #     ansible-galaxy install -r requirements.yml
 
       - name: cache maven packages
         uses: actions/cache@v2
@@ -104,6 +104,10 @@ jobs:
       - name: start automation tests using docker-compose
         run: |
           docker-compose up testing
+
+      - name: check for success
+        run: |
+          docker-compose up testingcheck
 
       - name: Stop the stack
         run: docker-compose down
