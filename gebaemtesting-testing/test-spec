@@ -149,7 +149,7 @@ runTest() {
         printSubSectionEnd "Direct Maven Command Execute"
 
         printSubSectionStart "Convert Reports"
-        ./asciidoctor-convert-reports -html
+        bash ./asciidoctor-convert-reports -html
         printSubSectionEnd "Convert Reports"
       fi
 
