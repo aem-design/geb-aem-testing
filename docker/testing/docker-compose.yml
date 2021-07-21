@@ -7,7 +7,7 @@ services:
     hostname: testing
     environment:
       # maven
-      - MAVEN_COMMAND=./test-spec --host author --port 8080 --url http://seleniumhub:4444 --maven
+      - MAVEN_COMMAND=bash ./test-spec --host author --port 8080 --url http://seleniumhub:4444 --maven
       # docker
       - PARENT_PROJECT_WITH_GIT=.
       - PARENT_PROJECT_WITH_GIT_NAME=geb-aem-testing
