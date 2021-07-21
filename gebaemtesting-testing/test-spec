@@ -13,25 +13,28 @@ WSLPATH=$(/usr/bin/which wslpath 2>/dev/null)
 TEST_SELENIUMHUB_SCHEME=${SELENIUMHUB_SCHEME:-http}
 TEST_SELENIUMHUB_PORT=${SELENIUMHUB_PORT:-32768}
 TEST_SELENIUMHUB_SERVICE=${SELENIUMHUB_SERVICE:-/wd/hub}
+TEST_SELENIUMHUB_HOST=${SELENIUMHUB_HOST:-seleniumhub}
 
 # Test defaults
-TEST_SELENIUM_URL=""  # "${TEST_SELENIUMHUB_SCHEME}://${LOCAL_IP}:${TEST_SELENIUMHUB_PORT}${TEST_SELENIUMHUB_SERVICE}"
+TEST_SELENIUM_URL="${TEST_SELENIUMHUB_SCHEME}://${TEST_SELENIUMHUB_HOST}:${TEST_SELENIUMHUB_PORT}${TEST_SELENIUMHUB_SERVICE}"
+
 TEST_IMAGE="aemdesign/centos-java-buildpack"
 TEST_OPEN_REPORT=false
 TEST_REPORT_PATH="generated-docs/summary.html"
 TEST_DRIVER_NAME="remote-seleniumhub-chrome"
-TEST_SCHEME="$AEM_SCHEME"
-TEST_HOST="$AEM_HOST"
-TEST_PORT="$AEM_PORT"
-TEST_USERNAME="$AEM_USER"
-TEST_PASSWORD="$AEM_PASS"
+TEST_SCHEME="${AEM_SCHEME:-http}"
+TEST_HOST="${AEM_HOST:-author}"
+TEST_PORT="${AEM_PORT:-8080}"
+TEST_USERNAME="${AEM_USER:-admin}"
+TEST_PASSWORD="${AEM_PASS:-admin}"
 TEST_SPECS="$(cat test-list | tr '\n' ',')"
 TEST_WORKSPACE=""
 TEST_LOGIN=false
-TEST_MAVEN_CONFIG=""
+TEST_MAVEN_CONFIG=" -Dmaven.repo.local=/build/.m2/repository "
 TEST_DISPATCHER=false
 TEST_SKIP_CONVERT=false
-TEST_USING_MAVEN=false
+TEST_USING_MAVEN=true
+TEST_SKIP_CONNECTION_TEST=false
 TEST_VIEWPORTS="$(cat test-viewports | tr '\n' ',')"
 
 debugOn
@@ -141,7 +144,6 @@ runTest() {
         printSubSectionStart "Direct Maven Command Execute"
         debug "${MAVEN_COMMAND}"
 
-        read -p "FFF"
         ${MAVEN_COMMAND}
         printSubSectionEnd "Direct Maven Command Execute"
 
@@ -259,7 +261,7 @@ EOF
 # process command arguments and set environment variables
 processArguments() {
   declare argv
-  argv=$(getopt -o "hs:H:p:U:P:u:t:w:Lc:RDSMV" --long "help,scheme:,host:,port:,username:,password:,url:,tests:,workspace:,login,config:,report,dispatcher,skip-convert,maven,viewports" -- "$@") || return
+  argv=$(getopt -o "hs:H:p:U:P:u:t:w:Lc:RDSMV:x" --long "help,scheme:,host:,port:,username:,password:,url:,tests:,workspace:,login,config:,report,dispatcher,skip-convert,maven,viewports" -- "$@") || return
   eval "set -- ${argv}"
 
   declare a
@@ -327,6 +329,10 @@ processArguments() {
         ;;
       -V|--viewports)
         export TEST_VIEWPORTS=$2
+        shift
+        ;;
+      -x|--skipconntest)
+        export TEST_SKIP_CONNECTION_TEST=true
         shift
         ;;
       --)
@@ -401,13 +407,18 @@ main() {
   # Begin the testing...
   printSectionBanner "Checking if Selenium Hub and AEM are available"
 
-  AEM_AVAILABLE=$(testServer ${TEST_SCHEME}://${TEST_HOST}:${TEST_PORT})
   HUB_AVAILABLE=$(testServer ${TEST_SELENIUM_URL})
-
   printSectionLine "Is Selenium Hub at ${TEST_SELENIUM_URL} available? ${HUB_AVAILABLE}"
-  printSectionLine "Is AEM at ${TEST_SCHEME}://${TEST_HOST}:${TEST_PORT} available? ${AEM_AVAILABLE}"
 
-  if [[ "true" == "$HUB_AVAILABLE" && "true" == "$AEM_AVAILABLE" ]]; then
+  if [[ "${TEST_SKIP_CONNECTION_TEST}" != "true" ]]; then
+    AEM_AVAILABLE=$(testServer ${TEST_SCHEME}://${TEST_HOST}:${TEST_PORT})
+
+    printSectionLine "Is AEM at ${TEST_SCHEME}://${TEST_HOST}:${TEST_PORT} available? ${AEM_AVAILABLE}"
+  else
+    printSectionLine "Skipping AEM Service Check."
+  fi
+
+  if [[ "true" == "$HUB_AVAILABLE" && ( "${TEST_SKIP_CONNECTION_TEST}" == "true" || "true" == "$AEM_AVAILABLE" ) ]]; then
       debug "Selenium Hub and AEM are both up and available!" "info"
 
       runTests ${TEST_DRIVER_NAME}
