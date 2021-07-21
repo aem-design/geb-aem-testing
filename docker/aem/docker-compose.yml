@@ -100,7 +100,7 @@ services:
     image: aemdesign/dispatcher
     hostname: dispatcher
     ports:
-      - 9090:8080
+      - 9080:8080
       - 9433:8433
     environment:
       - RENDERER_PORT=4503
