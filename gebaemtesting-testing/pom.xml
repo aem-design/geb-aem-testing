@@ -101,6 +101,7 @@
                 <failOnError>false</failOnError>
                 <filesets>
                 <fileset>
+                    <directory>drivers</directory>
                     <directory>remote-seleniumhub-chrome</directory>
                     <directory>target</directory>
                 </fileset>
