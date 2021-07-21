@@ -30,10 +30,10 @@
     <!-- P R O P E R T I E S -->
     <!-- ====================================================================== -->
     <properties>
-        <aem.host>localhost</aem.host>
-        <aem.port>4502</aem.port>
-        <aem.publish.host>localhost</aem.publish.host>
-        <aem.publish.port>4503</aem.publish.port>
+        <aem.host>author</aem.host>
+        <aem.port>8080</aem.port>
+        <aem.publish.host>publish</aem.publish.host>
+        <aem.publish.port>8080</aem.publish.port>
         <aem.username>admin</aem.username>
         <aem.password>admin</aem.password>
         <sling.user>admin</sling.user>
@@ -92,8 +92,8 @@
         <aemdesign.version>2.1.309</aemdesign.version>
 
         <aem.scheme>http</aem.scheme>
-        <seleniumhubhost.host>localhost</seleniumhubhost.host>
-        <seleniumhubhost.port>32768</seleniumhubhost.port>
+        <seleniumhubhost.host>seleniumhub</seleniumhubhost.host>
+        <seleniumhubhost.port>4444</seleniumhubhost.port>
         <seleniumhubhost.scheme>http</seleniumhubhost.scheme>
         <seleniumhubhost.service>/wd/hub</seleniumhubhost.service>
         <package.uploadProtocol>http</package.uploadProtocol>
