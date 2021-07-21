@@ -81,6 +81,15 @@ You can now prepare your AEM and project for testing
 * [Deploy Project Content](#Deploy-Project-Content) - deploy project code and content your AEM for testing
 * [GPG using Kleopatra](https://tau.gr/posts/2018-06-29-how-to-set-up-signing-commits-with-git/) - will ensure your commits are from you!
 
+### Update your Docker memory usage
+
+Create a file called `.wslconfig` in your home directory with following content, update as needed:
+
+```text
+[wsl2]
+memory=32GB
+```
+
 ### Run AEM in Docker
 
 [Back to Prerequisites](#Prerequisites)
