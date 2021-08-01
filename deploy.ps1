@@ -9,7 +9,7 @@ Param(
   [string]$AEM_USERNAME = "admin",
   [string]$AEM_PASSWORD = "admin",
   [string]$MVN_COMMAND = "mvn -DskipTests -e -U -P autoInstallPackage clean install -D""aem.port=$AEM_PORT"" -D""aem.host=$AEM_HOST"" -D""aem.username=$AEM_USERNAME"" -D""aem.password=$AEM_PASSWORD"" -D""aem.scheme=$AEM_SCHEME"" ",
-                                                                                                                                                                                                                                        [string]$FUNCTIONS_URI = "https://github.com/aem-design/aemdesign-docker/releases/latest/download/functions.ps1"
+  [string]$FUNCTIONS_URI = "https://github.com/aem-design/aemdesign-docker/releases/latest/download/functions.ps1"
 )
 
 $SKIP_CONFIG = $true
