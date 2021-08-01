@@ -42,7 +42,7 @@ services:
       - bash
       - -l
       - -c
-      - "cd /build/source/gebaemtesting-showcase && mvn -DskipTests -e -U -P autoInstallPackage clean install -Daem.port=8080 -Daem.host=author"
+      - "cd /build/source/gebaemtesting-showcase && mvn -DskipTests -e -U -P autoInstallPackage clean install -Daem.port=8080 -Daem.host=author -Dmaven.repo.local=/build/.m2/repository"
     working_dir: "/build/source"
     volumes:
       - "../../:/build/source"
@@ -88,7 +88,7 @@ services:
       - bash
       - -l
       - -c
-      - "cd /build/source/gebaemtesting-showcase && mvn -DskipTests -e -U -P autoInstallPackage clean install -Daem.port=8080 -Daem.host=publish"
+      - "cd /build/source/gebaemtesting-showcase && mvn -DskipTests -e -U -P autoInstallPackage clean install -Daem.port=8080 -Daem.host=publish -Dmaven.repo.local=/build/.m2/repository"
     working_dir: "/build/source"
     volumes:
       - "../../:/build/source"
